@@ -19,7 +19,7 @@ export default function Button({
 
   const variants = {
     primary:
-      'bg-primary-deepBlue hover:bg-accent-indigo text-text-white shadow-lg hover:shadow-xl focus:ring-accent-indigo',
+      'bg-primary-deep hover:bg-accent-indigo text-text-white shadow-lg hover:shadow-xl focus:ring-accent-indigo',
     secondary:
       'bg-background-light text-text-dark border-2 border-background-light hover:bg-background-subtle hover:border-text-light focus:ring-text-medium',
     danger:

@@ -16,7 +16,7 @@ const config: Config = {
         },
 
         primary: {
-          deepBlue: '#1E3A8A',
+          deep: '#1E3A8A',
           textDark: '#111827',
         },
 
