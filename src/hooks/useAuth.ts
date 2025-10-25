@@ -17,20 +17,19 @@ export const useAuth = (): UseAuthReturn => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>();
   const loginFetch = useFetch<AuthResponse>();
   const registerFetch = useFetch<AuthResponse>();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
 
-    if (storedUser && token) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
-  }, []);
+  //   if (token) {
+  //     // eslint-disable-next-line react-hooks/set-state-in-effect
+  //     setUser([{"id":"sdfs","nam"}]);
+  //   }
+  //   setLoading(false);
+  // }, []);
 
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {
@@ -41,12 +40,12 @@ export const useAuth = (): UseAuthReturn => {
       });
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setUser(response.data.user);
+        localStorage.setItem('token', response.data.accessToken);
+        // localStorage.setItem('user', JSON.stringify(response.data.user));
+        // setUser(response.data.user);
         return true;
       } else {
-        setError(response.error || 'Login failed');
+        setError(response.message);
         return false;
       }
     },
@@ -62,12 +61,12 @@ export const useAuth = (): UseAuthReturn => {
       });
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setUser(response.data.user);
+        localStorage.setItem('token', response.data.accessToken);
+        // localStorage.setItem('user', JSON.stringify(response.data.user));
+        // setUser(response.data.user);
         return true;
       } else {
-        setError(response.error || 'Registration failed');
+        setError(response.message);
         return false;
       }
     },

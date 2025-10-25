@@ -10,34 +10,32 @@ import Button from '@/components/ui/button';
 
 const Login = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, error } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+
     setLoading(true);
 
     const success = await login(formData.email, formData.password);
 
     if (success) {
       router.push('/dashboard');
-    } else {
-      setError('Invalid email or password');
     }
 
     setLoading(false);
   };
+  console.log('error:', error);
 
   return (
     <Card className='w-full max-w-md relative z-10 shadow-2xl'>
