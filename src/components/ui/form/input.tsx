@@ -22,6 +22,7 @@ const Input = ({ label, error, icon, className, ...props }: InputProps) => {
             className
           )}
           {...props}
+          autoComplete='off'
         />
       </div>
       {error && <p className='mt-1 text-sm text-red-600'>{error}</p>}

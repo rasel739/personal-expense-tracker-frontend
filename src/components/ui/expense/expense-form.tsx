@@ -5,6 +5,8 @@ import { CreateExpenseInput } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '../card';
 import { Input, Select, Textarea } from '../form';
 import Button from '../button';
+import { categories } from '@/constants';
+import { Icons } from '@/lib/icons';
 
 interface ExpenseFormProps {
   onSuccess: () => void;
@@ -21,17 +23,6 @@ const ExpenseForm = ({ onSuccess, onSubmit }: ExpenseFormProps) => {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof CreateExpenseInput, string>>>({});
   const [loading, setLoading] = useState(false);
-
-  const categories = [
-    'FOOD',
-    'TRANSPORT',
-    'SHOPPING',
-    'ENTERTAINMENT',
-    'BILLS',
-    'SALARY',
-    'INVESTMENT',
-    'OTHER',
-  ];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -89,19 +80,7 @@ const ExpenseForm = ({ onSuccess, onSubmit }: ExpenseFormProps) => {
     <Card>
       <CardHeader className='bg-linear-to-r from-purple-50 to-pink-50'>
         <CardTitle className='flex items-center space-x-2'>
-          <svg
-            className='w-7 h-7 text-purple-600'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-            />
-          </svg>
+          <Icons.Plus className='w-7 h-7 text-purple-600' />
           <span>Add New Transaction</span>
         </CardTitle>
       </CardHeader>
@@ -116,16 +95,7 @@ const ExpenseForm = ({ onSuccess, onSubmit }: ExpenseFormProps) => {
               onChange={handleChange}
               placeholder='e.g., Grocery Shopping'
               error={errors.title}
-              icon={
-                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'
-                  />
-                </svg>
-              }
+              icon={<Icons.Tag className='w-5 h-5' />}
             />
 
             <Input
@@ -137,16 +107,7 @@ const ExpenseForm = ({ onSuccess, onSubmit }: ExpenseFormProps) => {
               onChange={handleChange}
               placeholder='0.00'
               error={errors.amount}
-              icon={
-                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                  />
-                </svg>
-              }
+              icon={<Icons.Dollar className='w-5 h-5' />}
             />
           </div>
 
@@ -187,38 +148,12 @@ const ExpenseForm = ({ onSuccess, onSubmit }: ExpenseFormProps) => {
           <Button type='submit' disabled={loading} className='w-full' size='lg'>
             {loading ? (
               <>
-                <svg
-                  className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                >
-                  <circle
-                    className='opacity-25'
-                    cx='12'
-                    cy='12'
-                    r='10'
-                    stroke='currentColor'
-                    strokeWidth='4'
-                  ></circle>
-                  <path
-                    className='opacity-75'
-                    fill='currentColor'
-                    d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                  ></path>
-                </svg>
+                <Icons.Spinner className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' />
                 Adding Transaction...
               </>
             ) : (
               <>
-                <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-                  />
-                </svg>
+                <Icons.Plus className='w-5 h-5 mr-2' />
                 Add Transaction
               </>
             )}

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, AuthResponse } from '@/types';
+import { User, AuthResponse, ApiResponse } from '@/types';
 import { useFetch } from './useFetch';
+import { setCookie, deleteCookie, getCookie } from '@/utils/cookies';
+import normalizeUserData from '@/utils/normalizeUserData';
 
 interface UseAuthReturn {
   user: User | null;
@@ -17,19 +19,38 @@ export const useAuth = (): UseAuthReturn => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>();
+  const [error, setError] = useState<string | null>(null);
   const loginFetch = useFetch<AuthResponse>();
   const registerFetch = useFetch<AuthResponse>();
+  const profileFetch = useFetch<User>();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = getCookie('token');
 
-  //   if (token) {
-  //     // eslint-disable-next-line react-hooks/set-state-in-effect
-  //     setUser([{"id":"sdfs","nam"}]);
-  //   }
-  //   setLoading(false);
-  // }, []);
+      if (token) {
+        const response: ApiResponse<unknown> = await profileFetch.execute('/auth/user');
+
+        if (response.success && response.data) {
+          const normalizedUser = normalizeUserData(response.data);
+          if (normalizedUser) {
+            setUser(normalizedUser);
+          } else {
+            deleteCookie('token');
+            setUser(null);
+          }
+        } else {
+          deleteCookie('token');
+          setUser(null);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {
@@ -40,12 +61,13 @@ export const useAuth = (): UseAuthReturn => {
       });
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.accessToken);
-        // localStorage.setItem('user', JSON.stringify(response.data.user));
-        // setUser(response.data.user);
+        const token = response.data.accessToken;
+
+        setCookie('token', token);
+
         return true;
       } else {
-        setError(response.message);
+        setError(response.message || 'Login failed');
         return false;
       }
     },
@@ -61,12 +83,13 @@ export const useAuth = (): UseAuthReturn => {
       });
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.accessToken);
-        // localStorage.setItem('user', JSON.stringify(response.data.user));
-        // setUser(response.data.user);
+        const token = response.data.accessToken;
+
+        setCookie('token', token);
+
         return true;
       } else {
-        setError(response.message);
+        setError(response.message || 'Registration failed. Email may already be in use.');
         return false;
       }
     },
@@ -74,8 +97,8 @@ export const useAuth = (): UseAuthReturn => {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    deleteCookie('token');
+
     setUser(null);
     router.push('/');
   }, [router]);
