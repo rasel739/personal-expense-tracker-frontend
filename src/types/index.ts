@@ -5,8 +5,7 @@ export interface User {
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
+  accessToken: string;
 }
 
 export interface Expense {
@@ -32,9 +31,19 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  error?: string;
-  details?: Array<{ field: string; message: string }>;
+  error?: IGenericErrorResponse;
 }
+
+export type IGenericErrorResponse = {
+  statusCode: number;
+  message: string;
+  errorMessages: IGenericErrorMessage[];
+};
+
+export type IGenericErrorMessage = {
+  path: string | number;
+  message: string;
+};
 
 export interface ExpenseFilters {
   type?: 'INCOME' | 'EXPENSE' | '';

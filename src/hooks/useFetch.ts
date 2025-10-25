@@ -48,7 +48,7 @@ export function useFetch<T = unknown>(): UseFetchReturn<T> {
         const result: ApiResponse<T> = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.error || 'An error occurred');
+          throw new Error(result.message);
         }
 
         setState({ data: result.data || null, loading: false, error: null });
