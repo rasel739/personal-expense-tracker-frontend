@@ -5,6 +5,7 @@ import Badge from '../badge';
 import { Input, Select } from '../form';
 import { formatCurrency, formatDate } from '@/utils';
 import Button from '../button';
+import { Icons } from '@/lib/icons';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -37,13 +38,13 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Transaction History</CardTitle>
+          <CardTitle className='text-lg sm:text-xl md:text-2xl'>Transaction History</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='space-y-3'>
             {[1, 2, 3].map((i) => (
               <div key={i} className='animate-pulse'>
-                <div className='h-24 bg-gray-200 rounded-lg'></div>
+                <div className='h-24 sm:h-28 md:h-32 bg-gray-200 rounded-lg'></div>
               </div>
             ))}
           </div>
@@ -55,33 +56,26 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
   return (
     <Card>
       <CardHeader className='bg-linear-to-r from-indigo-50 to-purple-50'>
-        <CardTitle className='flex items-center space-x-2'>
-          <svg
-            className='w-7 h-7 text-indigo-600'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-            />
-          </svg>
-          <span>Transaction History</span>
-          <Badge variant='info' size='sm'>
+        <CardTitle className='flex flex-col sm:flex-row items-start sm:items-center gap-2'>
+          <div className='flex items-center space-x-2'>
+            <Icons.Clipboard className='w-6 h-6 sm:w-7 sm:h-7 text-indigo-600' />
+            <span className='text-lg sm:text-xl md:text-2xl'>Transaction History</span>
+          </div>
+          <Badge variant='info' size='sm' className='ml-0 sm:ml-auto'>
             {filteredExpenses.length}
           </Badge>
         </CardTitle>
       </CardHeader>
 
       <CardContent>
-        <div className='mb-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
+        {/* Filters Section */}
+        <div className='mb-4 sm:mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
           <Select
             label='Filter by Type'
             value={filters.type || ''}
-            onChange={(e) => setFilters({ ...filters, type: e.target.value as any })}
+            onChange={(e) =>
+              setFilters({ ...filters, type: e.target.value as '' | 'INCOME' | 'EXPENSE' })
+            }
             options={[
               { value: '', label: 'All Types' },
               { value: 'INCOME', label: '📈 Income Only' },
@@ -94,37 +88,19 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
             value={filters.category}
             onChange={(e) => setFilters({ ...filters, category: e.target.value })}
             placeholder='Search category...'
-            icon={
-              <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-                />
-              </svg>
-            }
+            icon={<Icons.Search className='w-5 h-5' />}
           />
         </div>
 
-        <div className='space-y-3'>
+        {/* Transactions List */}
+        <div className='space-y-3 sm:space-y-4'>
           {filteredExpenses.length === 0 ? (
-            <div className='text-center py-12'>
-              <svg
-                className='w-16 h-16 text-gray-300 mx-auto mb-4'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4'
-                />
-              </svg>
-              <p className='text-gray-500 text-lg font-medium'>No transactions found</p>
-              <p className='text-gray-400 text-sm mt-1'>
+            <div className='text-center py-8 sm:py-12'>
+              <Icons.Inbox className='w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4' />
+              <p className='text-gray-500 text-base sm:text-lg font-medium'>
+                No transactions found
+              </p>
+              <p className='text-gray-400 text-xs sm:text-sm mt-1 px-4'>
                 {filters.type || filters.category
                   ? 'Try adjusting your filters'
                   : 'Add your first transaction to get started'}
@@ -134,17 +110,101 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
             filteredExpenses.map((expense) => (
               <div
                 key={expense.id}
-                className={`group relative border-2 rounded-xl p-5 transition-all duration-300 hover:shadow-lg ${
+                className={`group relative border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 hover:shadow-lg ${
                   expense.type === 'INCOME'
                     ? 'border-green-200 bg-linear-to-br from-green-50 to-emerald-50 hover:border-green-300'
                     : 'border-red-200 bg-linear-to-br from-red-50 to-pink-50 hover:border-red-300'
                 }`}
               >
-                <div className='flex items-start justify-between'>
-                  <div className='flex-1'>
-                    <div className='flex items-center space-x-3 mb-2'>
+                <div className='md:hidden space-y-3'>
+                  <div className='flex items-start justify-between gap-3'>
+                    <div className='flex items-start gap-3 flex-1 min-w-0'>
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                          expense.type === 'INCOME' ? 'bg-green-100' : 'bg-red-100'
+                        }`}
+                      >
+                        <svg
+                          className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                            expense.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                          }`}
+                          fill='none'
+                          stroke='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d={
+                              expense.type === 'INCOME'
+                                ? 'M7 11l5-5m0 0l5 5m-5-5v12'
+                                : 'M17 13l-5 5m0 0l-5-5m5 5V6'
+                            }
+                          />
+                        </svg>
+                      </div>
+
+                      <div className='flex-1 min-w-0'>
+                        <h3 className='text-base sm:text-lg font-bold text-gray-900 mb-1 truncate'>
+                          {expense.title}
+                        </h3>
+                        <p
+                          className={`text-xl sm:text-2xl font-bold ${
+                            expense.type === 'INCOME' ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {expense.type === 'INCOME' ? '+' : '-'}
+                          {formatCurrency(expense.amount)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badges Row */}
+                  <div className='flex flex-wrap items-center gap-2'>
+                    <Badge variant={expense.type === 'INCOME' ? 'success' : 'danger'} size='sm'>
+                      {expense.type}
+                    </Badge>
+                    <Badge variant='default' size='sm'>
+                      {expense.category}
+                    </Badge>
+                    {expense.isLarge && (
+                      <Badge variant='warning' size='sm'>
+                        🔥 Large
+                      </Badge>
+                    )}
+                  </div>
+
+                  {expense.note && (
+                    <p className='text-sm text-gray-600 pl-3 border-l-2 border-gray-300'>
+                      {expense.note}
+                    </p>
+                  )}
+
+                  <div className='flex items-center justify-between gap-2 pt-2 border-t border-gray-200'>
+                    <p className='text-xs text-gray-400 flex items-center'>
+                      <Icons.Clock className='w-3 h-3 mr-1' />
+                      {formatDate(expense.createdAt)}
+                    </p>
+
+                    <Button
+                      variant='danger'
+                      size='sm'
+                      onClick={() => handleDelete(expense.id, expense.title)}
+                      className='shrink-0'
+                    >
+                      <Icons.Trash className='w-4 h-4 mr-1' />
+                      <span className='hidden xs:inline'>Delete</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className='hidden md:flex items-start justify-between gap-4'>
+                  <div className='flex-1 min-w-0'>
+                    <div className='flex items-center gap-3 mb-2'>
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                           expense.type === 'INCOME' ? 'bg-green-100' : 'bg-red-100'
                         }`}
                       >
@@ -169,9 +229,11 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
                         </svg>
                       </div>
 
-                      <div className='flex-1'>
-                        <h3 className='text-lg font-bold text-gray-900 mb-1'>{expense.title}</h3>
-                        <div className='flex items-center space-x-2'>
+                      <div className='flex-1 min-w-0'>
+                        <h3 className='text-lg font-bold text-gray-900 mb-1 truncate'>
+                          {expense.title}
+                        </h3>
+                        <div className='flex flex-wrap items-center gap-2'>
                           <Badge
                             variant={expense.type === 'INCOME' ? 'success' : 'danger'}
                             size='sm'
@@ -197,24 +259,12 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
                     )}
 
                     <p className='text-xs text-gray-400 mt-3 flex items-center ml-15'>
-                      <svg
-                        className='w-4 h-4 mr-1'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
-                        />
-                      </svg>
+                      <Icons.Clock className='w-4 h-4 mr-1' />
                       {formatDate(expense.createdAt)}
                     </p>
                   </div>
 
-                  <div className='text-right flex flex-col items-end space-y-3'>
+                  <div className='text-right flex flex-col items-end space-y-3 shrink-0'>
                     <div>
                       <p
                         className={`text-3xl font-bold ${
@@ -232,19 +282,7 @@ const ExpenseList = ({ expenses, onDelete, loading }: ExpenseListProps) => {
                       onClick={() => handleDelete(expense.id, expense.title)}
                       className='opacity-0 group-hover:opacity-100 transition-opacity'
                     >
-                      <svg
-                        className='w-4 h-4 mr-1'
-                        fill='none'
-                        stroke='currentColor'
-                        viewBox='0 0 24 24'
-                      >
-                        <path
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeWidth={2}
-                          d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                        />
-                      </svg>
+                      <Icons.Trash className='w-4 h-4 mr-1' />
                       Delete
                     </Button>
                   </div>

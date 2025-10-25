@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ApiResponse } from '@/types';
+import { getCookie } from '@/utils/cookies';
 
 interface UseFetchState<T> {
   data: T | null;
@@ -21,21 +22,13 @@ export function useFetch<T = unknown>(): UseFetchReturn<T> {
     error: null,
   });
 
-  const getToken = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
-    }
-    return null;
-  }, []);
-
   const execute = useCallback(
     async (endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
       setState({ data: null, loading: true, error: null });
 
-      const token = getToken();
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...{ Authorization: `${getCookie('token')}` },
         ...options.headers,
       };
 
@@ -48,21 +41,27 @@ export function useFetch<T = unknown>(): UseFetchReturn<T> {
         const result: ApiResponse<T> = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.message);
+          const errorMessage = result.message || result.error || 'Something went wrong';
+          throw new Error(typeof errorMessage === 'string' ? errorMessage : 'Request failed');
         }
 
         setState({ data: result.data || null, loading: false, error: null });
-        return result;
+        return {
+          success: true,
+          data: result.data,
+          message: result.message,
+        };
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Network error';
         setState({ data: null, loading: false, error: errorMessage });
         return {
           success: false,
           error: errorMessage,
+          message: errorMessage,
         };
       }
     },
-    [getToken]
+    []
   );
 
   const reset = useCallback(() => {

@@ -36,13 +36,13 @@ export function useExpenses(): UseExpensesReturn {
 
       const queryString = queryParams.toString();
       const response = await expensesFetch.execute(
-        `/expenses${queryString ? `?${queryString}` : ''}`
+        `/expense${queryString ? `?${queryString}` : ''}`
       );
 
       if (response.success && response.data) {
         setExpenses(response.data);
       } else {
-        setError(response.error || 'Failed to fetch expenses');
+        setError((response.error as string) || 'Failed to fetch expenses');
       }
 
       setLoading(false);
@@ -51,7 +51,7 @@ export function useExpenses(): UseExpensesReturn {
   );
 
   const fetchSummary = useCallback(async () => {
-    const response = await summaryFetch.execute('/expenses/summary');
+    const response = await summaryFetch.execute('/expense/summary');
 
     if (response.success && response.data) {
       setSummary(response.data);
@@ -60,18 +60,17 @@ export function useExpenses(): UseExpensesReturn {
 
   const createExpense = useCallback(
     async (data: CreateExpenseInput): Promise<boolean> => {
-      const response = await createFetch.execute('/expenses', {
+      const response = await createFetch.execute('/expense', {
         method: 'POST',
         body: JSON.stringify(data),
       });
 
       if (response.success) {
-        // eslint-disable-next-line react-hooks/immutability
         await refreshAll();
         return true;
       }
 
-      setError(response.error || 'Failed to create expense');
+      setError((response.error as string) || 'Failed to create expense');
       return false;
     },
     [createFetch]
@@ -79,7 +78,7 @@ export function useExpenses(): UseExpensesReturn {
 
   const deleteExpense = useCallback(
     async (id: string): Promise<boolean> => {
-      const response = await deleteFetch.execute(`/expenses/${id}`, {
+      const response = await deleteFetch.execute(`/expense/${id}`, {
         method: 'DELETE',
       });
 
@@ -88,7 +87,7 @@ export function useExpenses(): UseExpensesReturn {
         return true;
       }
 
-      setError(response.error || 'Failed to delete expense');
+      setError((response.error as string) || 'Failed to delete expense');
       return false;
     },
     [deleteFetch]
@@ -100,6 +99,7 @@ export function useExpenses(): UseExpensesReturn {
 
   useEffect(() => {
     refreshAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

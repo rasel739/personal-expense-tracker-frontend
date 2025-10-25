@@ -31,7 +31,7 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
-  error?: IGenericErrorResponse;
+  error?: string | IGenericErrorResponse;
 }
 
 export type IGenericErrorResponse = {
